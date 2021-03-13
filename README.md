@@ -26,3 +26,43 @@ Technologies used:
   - Django and postgresql for API
   - Message broker: RabbitMQ
   - Tracking service: Google Maps API
+
+Technologies breakdown:
+
+  User Service:
+  - Djangorestframework 3.12.2 - Used to create new users, both couriers and clients, edit the user data, remove users, creates session key or token (will be stored in cookies by front-end). Token will be used as a method of authentication in order for the clients to use either the orders services or for the couriers to use the tracking services.
+  - Postgresql will be used for storage of data and session control.
+  - RabbitMQ will be used to send tokens to the services.
+
+  Order Service:
+  - Djangorestframework 3.12.2 - Used to receive new orders, store user and orders data, used to generate a payload for the RabbitMQ that contains, client location, pick-up point location and order description and optional ordering details. 
+  - Postgresql to store orders data.
+  - RabbitMQ will be used to send order data to the queue for the tracking service.
+
+  Courier Service
+  - Djangorestframework 3.12.2 - Used to receive new orders from the message queue and broadcast them to the available couriers. Keeps track of all active users, receives order status update from courier and adds new information to the queue. Calculates price of delivery. When order is accepted it adds a message to the queue for order service to tell the user his order is on it's way.
+  - TBD Library used to broadcast data from server to all apps.
+  - Postgresql TBD (not sure if needed)
+  - RabbitMQ will be used to send and receive messages.
+
+  Queue:
+  -RabbitMQ - Used to manage messages between services.
+
+  AndroidApp:
+  - Used to login and register couriers.
+  - Receive orders accept or deny(optional).
+  - Map of route.
+  - Send updates of order
+  - Confirm delivery.
+
+  Web browser:
+  - Used to login and register clients.
+  - Create new order using maps and a couple of text boxes to describe order.
+  - Receive updates about order.
+  - Order history. 
+  - REACT
+
+  Web server:
+  - Send code* to browser
+
+  *JUST CODE
