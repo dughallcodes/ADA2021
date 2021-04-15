@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  orders:
+    build: ./OrderService
+    container_name: order_service
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./OrderService:/usr/src/app
+    ports:
+      - "8000:8000"
+    depends_on: 
+      - pgdb_orders
+  pgdb_orders: 
+    image: postgres
+    container_name:  pgdb_orders
+    expose:
+      - "5433"
+    ports:
+      - "5433:5432"
+    environment: 
+      - POSTGRES_DB=orders
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres\
+  users:
+    build: ./UserService
+    container_name: users_service
+    command: python manage.py runserver 0.0.0.0:8001
+    volumes:
+      - ./UserService:/usr/src/app
+    ports:
+      - "8001:8001"
+    depends_on: 
+      - pgdb_users
+  pgdb_users: 
+    image: postgres
+    container_name:  pgdb_users
+    expose:
+      - "5434"
+    ports:
+      - "5434:5432"
+    environment: 
+      - POSTGRES_DB=users
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
