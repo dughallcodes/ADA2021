@@ -47,3 +47,18 @@ services:
       - POSTGRES_DB=users
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+  rabbitmq:
+   image: rabbitmq:3-management
+   hostname: "rabbitmq"
+   environment:
+     RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+     RABBITMQ_DEFAULT_USER: "rabbitmq"
+     RABBITMQ_DEFAULT_PASS: "rabbitmq"
+     RABBITMQ_DEFAULT_VHOST: "/"
+   ports:
+     - "15672:15672"
+     - "5600:5672"
+   labels:
+     NAME: "rabbitmq"
+   volumes:
+     - "./RabbitMQ/enabled_plugins:/etc/rabbitmq/enabled_plugins"
