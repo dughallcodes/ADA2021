@@ -20,6 +20,7 @@ from users import views
 from django.urls.conf import include
 
 router = routers.DefaultRouter()
-router.register(r"BasicUser", views.BasicUserViewSet)
+router.register(r"user", views.UserViewSet)
+router.register(r"courier", views.CourierViewSet)
 
-urlpatterns = [path("admin/", admin.site.urls), path("", include(router.urls))]
+urlpatterns = [path("admin/", admin.site.urls), path("register/", include(router.urls))]

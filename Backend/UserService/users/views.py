@@ -1,9 +1,15 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import BasicUser, Address
-from .serializers import BasicUserSerializer, AddressSerializer
+from .models import User, Courier
+from .serializers import UserSerializer, CourierSerializer
+from rest_framework.response import Response
 
 
-class BasicUserViewSet(viewsets.ModelViewSet):
-    queryset = BasicUser.objects.all()
-    serializer_class = BasicUserSerializer
+class CourierViewSet(viewsets.ModelViewSet):
+    queryset = Courier.objects.all()
+    serializer_class = CourierSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
