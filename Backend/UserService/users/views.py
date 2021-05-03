@@ -36,8 +36,7 @@ class LoginUserViewSet(viewsets.ViewSet):
             return Response(
                 status=200,
                 data={
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
+                    "token": str(refresh.access_token),
                     "username": username,
                 },
             )
@@ -69,8 +68,7 @@ class LoginCourierViewSet(viewsets.ViewSet):
             return Response(
                 status=200,
                 data={
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
+                    "token": str(refresh.access_token),
                     "username": username,
                 },
             )
