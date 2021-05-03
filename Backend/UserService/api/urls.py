@@ -18,9 +18,20 @@ from rest_framework import routers
 from django.urls import path
 from users import views
 from django.urls.conf import include
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
-router = routers.DefaultRouter()
-router.register(r"user", views.UserViewSet)
-router.register(r"courier", views.CourierViewSet)
+router_register = routers.DefaultRouter()
+router_login = routers.DefaultRouter()
+router_register.register(r"user", views.UserViewSet, basename="Register User")
+router_register.register(r"courier", views.CourierViewSet, basename="Register Courier")
+router_login.register(r"user", views.LoginUserViewSet, basename="Login User")
+router_login.register(r"courier", views.LoginCourierViewSet, basename="Login User")
 
-urlpatterns = [path("admin/", admin.site.urls), path("register/", include(router.urls))]
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("register/", include(router_register.urls)),
+    path("login/", include(router_login.urls)),
+]
