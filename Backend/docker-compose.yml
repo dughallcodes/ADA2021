@@ -49,7 +49,6 @@ services:
       - POSTGRES_PASSWORD=postgres
   rabbitmq:
    image: rabbitmq:3-management
-   hostname: "rabbitmq"
    environment:
      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
      RABBITMQ_DEFAULT_USER: "rabbitmq"
@@ -57,8 +56,15 @@ services:
      RABBITMQ_DEFAULT_VHOST: "/"
    ports:
      - "15672:15672"
-     - "5600:5672"
+     - "5672:5672"
    labels:
      NAME: "rabbitmq"
+   networks: 
+     - rabbitmq_net
    volumes:
-     - "./RabbitMQ/enabled_plugins:/etc/rabbitmq/enabled_plugins"
+     - ./RabbitMQ/data/:/var/lib/rabbitmq/
+     - ./RabbitMQ/log/:/var/log/rabbitmq/
+
+networks: 
+  rabbitmq_net:
+    driver: bridge
