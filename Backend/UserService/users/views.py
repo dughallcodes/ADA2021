@@ -7,6 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from users import serializers
 
@@ -26,6 +28,10 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserAddressSerializer
+    authentication_classes = [
+        JWTTokenUserAuthentication,
+    ]
+    permission_classes = [IsAuthenticated]
 
 
 class CourierViewSet(viewsets.ModelViewSet):
