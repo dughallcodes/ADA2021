@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import User, Courier
-from .serializers import UserSerializer, CourierSerializer
+from .serializers import UserSerializer, CourierSerializer, UserAddressSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
 
 from users import serializers
 
@@ -24,7 +23,9 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-# TODO:Get user address by id
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserAddressSerializer
 
 
 class CourierViewSet(viewsets.ModelViewSet):

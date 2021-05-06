@@ -46,3 +46,12 @@ class UserSerializer(serializers.ModelSerializer):
         address = Address.objects.create(**address_data)
         user = User.objects.create(address=address, **validated_data)
         return user
+
+
+class UserAddressSerializer(serializers.ModelSerializer):
+    address = AddressSerializer(many=False, required=False)
+
+    class Meta:
+        model = User
+        depth = 1
+        fields = ("address",)
