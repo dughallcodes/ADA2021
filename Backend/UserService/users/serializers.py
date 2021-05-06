@@ -42,7 +42,6 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ("id",)
 
     def create(self, validated_data):
-        logging.warning(validated_data)
         address_data = dict(validated_data.pop("address"))
         address = Address.objects.create(**address_data)
         user = User.objects.create(address=address, **validated_data)

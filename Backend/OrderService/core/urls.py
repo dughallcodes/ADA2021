@@ -19,8 +19,6 @@ from orderapi import views
 from rest_framework import routers
 
 routers = routers.DefaultRouter()
-routers.register(r"location", views.LocationViewSet)
-routers.register(r"client", views.ClientViewSet)
 routers.register(r"order", views.OrderViewSet)
 
 urlpatterns = [path("admin/", admin.site.urls), path("", include(routers.urls))]

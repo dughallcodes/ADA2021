@@ -1,46 +1,25 @@
-from django.contrib.auth.models import User, Group
-from django.db.models import fields
 from rest_framework import serializers
-from .models import Location, Client, Order
-from orderapi import models
+from .models import Address, Order
 
 
-class LocationSerializer(serializers.ModelSerializer):
+class AddressSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Location
-        fields = ["lat", "lng", "description"]
-
-    def create(self, validated_data):
-        return Location.objects.create(**validated_data)
-
-
-class ClientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Client
-        fields = ["name", "location", "phone_number"]
-
-    def create(self, validated_data):
-        return Client.objects.create(**validated_data)
+        model = Address
+        exclude = ("id",)
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    client = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all())
-    pick_up_location = LocationSerializer()
+    pick_up_location = AddressSerializer(many=False, required=True)
 
     class Meta:
         model = Order
-        fields = [
-            "timestamp",
-            "status",
-            "client",
-            "order_txt",
-            "pick_up_location",
-            "pick_up_description",
-        ]
+        depth = 1
+        exclude = ("id",)
 
     def create(self, validated_data):
-        pick_up_location_data = validated_data.pop("pick_up_location")
-        order = Order.objects.create(**validated_data)
-        loc = Location.objects.create(**pick_up_location_data)
-        order.pick_up_location = loc
+        pick_up_location_data = dict(validated_data.pop("pick_up_location"))
+        pick_up_location = Address.objects.create(**pick_up_location_data)
+        order = Order.objects.create(
+            pick_up_location=pick_up_location, **validated_data
+        )
         return order

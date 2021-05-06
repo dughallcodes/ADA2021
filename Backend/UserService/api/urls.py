@@ -25,6 +25,7 @@ from rest_framework_simplejwt.views import (
 
 router_register = routers.DefaultRouter()
 router_login = routers.DefaultRouter()
+router_get_address = routers.DefaultRouter()
 router_register.register(r"user", views.UserViewSet, basename="Register User")
 router_register.register(r"courier", views.CourierViewSet, basename="Register Courier")
 router_login.register(r"user", views.LoginUserViewSet, basename="Login User")
