@@ -1,16 +1,23 @@
 version: "3.7"
 
 services:
-  orders:
-    build: ./OrderService
-    container_name: order_service
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./OrderService:/usr/src/app
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
     ports:
-      - "8000:8000"
-    depends_on: 
-      - pgdb_orders
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmq"
+    networks: 
+      - rabbitmq_net
+    volumes:
+      - ./RabbitMQ/data/:/var/lib/rabbitmq/
+      - ./RabbitMQ/log/:/var/log/rabbitmq/
   pgdb_orders: 
     image: postgres
     container_name:  pgdb_orders
@@ -24,16 +31,6 @@ services:
       - POSTGRES_DB=orders
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-  users:
-    build: ./UserService
-    container_name: users_service
-    command: python manage.py runserver 0.0.0.0:8001
-    volumes:
-      - ./UserService:/usr/src/app
-    ports:
-      - "8001:8001"
-    depends_on: 
-      - pgdb_users
   pgdb_users: 
     image: postgres
     container_name:  pgdb_users
@@ -47,23 +44,28 @@ services:
       - POSTGRES_DB=users
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-  rabbitmq:
-   image: rabbitmq:3-management
-   environment:
-     RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-     RABBITMQ_DEFAULT_USER: "rabbitmq"
-     RABBITMQ_DEFAULT_PASS: "rabbitmq"
-     RABBITMQ_DEFAULT_VHOST: "/"
-   ports:
-     - "15672:15672"
-     - "5672:5672"
-   labels:
-     NAME: "rabbitmq"
-   networks: 
-     - rabbitmq_net
-   volumes:
-     - ./RabbitMQ/data/:/var/lib/rabbitmq/
-     - ./RabbitMQ/log/:/var/log/rabbitmq/
+  orders:
+    build: ./OrderService
+    container_name: order_service
+    volumes:
+      - ./OrderService:/usr/src/app
+    ports:
+      - "8000:8000"
+    depends_on: 
+      - pgdb_orders
+      - rabbitmq
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+  users:
+    build: ./UserService
+    container_name: users_service
+    volumes:
+      - ./UserService:/usr/src/app
+    ports:
+      - "8001:8001"
+    depends_on: 
+      - pgdb_users
+      - rabbitmq
+    command: bash -c "python manage.py runserver 0.0.0.0:8001"
 
 networks: 
   rabbitmq_net:
