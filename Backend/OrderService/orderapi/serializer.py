@@ -1,3 +1,4 @@
+from django.db.models import fields
 from rest_framework import serializers
 from .models import Address, Order
 
@@ -14,7 +15,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         depth = 1
-        exclude = ("id",)
+        fields = "__all__"
 
     def create(self, validated_data):
         pick_up_location_data = dict(validated_data.pop("pick_up_location"))
