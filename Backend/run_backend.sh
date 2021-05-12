@@ -7,4 +7,6 @@ wait
 echo "🥱 Creating orders database"
 docker-compose exec orders python manage.py migrate
 wait
+echo "😴 Creating couriers database"
+docker-compose exec couriers python manage.py migrate
 echo "😎 Done!"

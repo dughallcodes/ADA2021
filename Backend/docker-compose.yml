@@ -31,6 +31,19 @@ services:
       - POSTGRES_DB=orders
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+  pgdb_couriers: 
+    image: postgres
+    container_name:  pgdb_couriers
+    volumes: 
+      - ./CourierService/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    expose:
+      - "5435"
+    ports:
+      - "5435:5432"
+    environment: 
+      - POSTGRES_DB=couriers
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
   pgdb_users: 
     image: postgres
     container_name:  pgdb_users
@@ -66,6 +79,17 @@ services:
       - pgdb_users
       - rabbitmq
     command: bash -c "python manage.py runserver 0.0.0.0:8001"
+  couriers:
+    build: ./CourierService
+    container_name: courier_service
+    volumes:
+      - ./CourierService:/usr/src/app
+    ports:
+      - "8002:8002"
+    depends_on: 
+      - pgdb_couriers
+      - rabbitmq
+    command: bash -c "python manage.py runserver 0.0.0.0:8002"
 
 networks: 
   rabbitmq_net:
