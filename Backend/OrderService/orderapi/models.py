@@ -37,6 +37,7 @@ class Order(models.Model):
     order_txt = models.CharField(max_length=100, default="")
     pick_up_location = models.ForeignKey(Address, on_delete=models.CASCADE)
     pick_up_description = models.CharField(max_length=100, null=True)
+    courier_id = models.CharField(max_length=100, default="")
 
     def __str__(self) -> str:
         return self.order_txt

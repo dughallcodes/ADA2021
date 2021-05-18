@@ -11,13 +11,18 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+      - "5671:5671"
     labels:
       NAME: "rabbitmq"
-    networks: 
-      - rabbitmq_net
     volumes:
       - ./RabbitMQ/data/:/var/lib/rabbitmq/
       - ./RabbitMQ/log/:/var/log/rabbitmq/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   pgdb_orders: 
     image: postgres
     container_name:  pgdb_orders
@@ -31,6 +36,7 @@ services:
       - POSTGRES_DB=orders
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
   pgdb_couriers: 
     image: postgres
     container_name:  pgdb_couriers
@@ -44,6 +50,7 @@ services:
       - POSTGRES_DB=couriers
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
   pgdb_users: 
     image: postgres
     container_name:  pgdb_users
@@ -57,6 +64,7 @@ services:
       - POSTGRES_DB=users
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
   orders:
     build: ./OrderService
     container_name: order_service
@@ -64,10 +72,23 @@ services:
       - ./OrderService:/usr/src/app
     ports:
       - "8000:8000"
+    restart: on-failure
     depends_on: 
       - pgdb_orders
       - rabbitmq
     command: bash -c "python manage.py runserver 0.0.0.0:8000"
+
+  orders_consumer:
+    build: ./OrderService
+    container_name: order_consumer_service
+    volumes:
+      - ./OrderService:/usr/src/app
+    depends_on: 
+      - pgdb_orders
+      - orders
+      - rabbitmq
+    command: bash -c "python consume.py"
+
   users:
     build: ./UserService
     container_name: users_service
@@ -79,6 +100,7 @@ services:
       - pgdb_users
       - rabbitmq
     command: bash -c "python manage.py runserver 0.0.0.0:8001"
+
   couriers:
     build: ./CourierService
     container_name: courier_service
@@ -90,7 +112,3 @@ services:
       - pgdb_couriers
       - rabbitmq
     command: bash -c "python manage.py runserver 0.0.0.0:8002"
-
-networks: 
-  rabbitmq_net:
-    driver: bridge

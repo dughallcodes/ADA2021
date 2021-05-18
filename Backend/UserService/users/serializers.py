@@ -23,7 +23,7 @@ class CourierSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Courier
-        exclude = ("id",)
+        fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         depth = 1
-        exclude = ("id",)
+        fields = "__all__"
 
     def create(self, validated_data):
         address_data = dict(validated_data.pop("address"))
