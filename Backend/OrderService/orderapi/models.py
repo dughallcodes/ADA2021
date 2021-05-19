@@ -7,14 +7,11 @@ from uuid import uuid4
 
 
 class Address(models.Model):
-    street_name = models.CharField(max_length=256, default="")
-    street_number = models.CharField(max_length=256, default="")
-    postal_code = models.CharField(max_length=256, default="")
-    city = models.CharField(max_length=256, default="")
-    region = models.CharField(max_length=256, default="")
+    lat = models.FloatField(default=0.0)
+    lng = models.FloatField(default=0.0)
 
     def __str__(self):
-        return self.street_name + " " + self.street_number
+        return self.lat + ":" + self.lng
 
 
 class Order(models.Model):
@@ -35,7 +32,15 @@ class Order(models.Model):
     status = models.CharField(max_length=9, choices=STATUS, default=INIT)
     client_id = models.CharField(max_length=100, default="")
     order_txt = models.CharField(max_length=100, default="")
-    pick_up_location = models.ForeignKey(Address, on_delete=models.CASCADE)
+    pick_up_location = models.ForeignKey(
+        Address, on_delete=models.CASCADE, related_name="pick_up_location"
+    )
+    delivery_location = models.ForeignKey(
+        Address,
+        on_delete=models.CASCADE,
+        related_name="delivery_location",
+        null=True,
+    )
     pick_up_description = models.CharField(max_length=100, null=True)
     courier_id = models.CharField(max_length=100, default="")
 

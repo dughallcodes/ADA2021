@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import User, Courier
-from .serializers import UserSerializer, CourierSerializer, UserAddressSerializer
+from .serializers import UserSerializer, CourierSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,15 +23,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-
-
-class AddressViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserAddressSerializer
-    authentication_classes = [
-        JWTTokenUserAuthentication,
-    ]
-    permission_classes = [IsAuthenticated]
 
 
 class CourierViewSet(viewsets.ModelViewSet):

@@ -25,18 +25,13 @@ from rest_framework_simplejwt.views import (
 
 router_register = routers.DefaultRouter()
 router_login = routers.DefaultRouter()
-router_get_address = routers.DefaultRouter()
 router_register.register(r"user", views.UserViewSet, basename="Register User")
 router_register.register(r"courier", views.CourierViewSet, basename="Register Courier")
 router_login.register(r"user", views.LoginUserViewSet, basename="Login User")
 router_login.register(r"courier", views.LoginCourierViewSet, basename="Login User")
-router_get_address.register(
-    r"address", views.AddressViewSet, basename="Get User Address"
-)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("register/", include(router_register.urls)),
     path("login/", include(router_login.urls)),
-    path("", include(router_get_address.urls)),
 ]
