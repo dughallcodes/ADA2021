@@ -2,7 +2,7 @@ echo "Let's get this bread"
 docker-compose up -d --b rabbitmq
 wait
 echo "🥱 Waiting for rabbitMQ to start"
-sleep 10s
+sleep 15s
 docker-compose up -d --b
 echo "😪 Creating users database"
 docker-compose exec users python manage.py migrate
