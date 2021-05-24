@@ -27,7 +27,7 @@ SECRET_KEY = "!pt7)0(g3z=4*+xpw*&_(2khlbf()s*s2(js_j8zmax9#=ip=j"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = ["*"]
 
 
@@ -44,12 +44,14 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "orderapi",
     "rest_framework_simplejwt",
+    "corsheaders",
 ]
 SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
