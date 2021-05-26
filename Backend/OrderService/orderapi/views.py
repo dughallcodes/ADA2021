@@ -95,10 +95,11 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_available_orders(self, request):
         orders = Order.objects.filter(status="INIT").values()
         for order in orders:
+            print(order)
             order["pick_up_location"] = Address.objects.filter(
                 id=order["pick_up_location_id"]
             ).values()
             order["delivery_location"] = Address.objects.filter(
-                id=order["delivery_location"]
+                id=order["delivery_location_id"]
             ).values()
         return Response(status=200, data=orders)

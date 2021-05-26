@@ -7,12 +7,8 @@ import logging
 
 
 class CourierSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        required=True, validators=[UniqueValidator(queryset=Courier.objects.all())]
-    )
-    email = serializers.EmailField(
-        required=True, validators=[UniqueValidator(queryset=Courier.objects.all())]
-    )
+    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
@@ -21,12 +17,8 @@ class CourierSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        required=True, validators=[UniqueValidator(queryset=User.objects.all())]
-    )
-    email = serializers.EmailField(
-        required=True, validators=[UniqueValidator(queryset=User.objects.all())]
-    )
+    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
