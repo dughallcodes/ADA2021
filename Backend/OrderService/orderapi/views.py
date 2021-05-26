@@ -28,16 +28,17 @@ def attempt_connection():
     return channel
 
 
-channel = None
-try:
-    channel = attempt_connection()
-except pika.exceptions.AMQPChannelError as err:
-    print("Caught a channel error: {}, stopping...".format(err))
-    channel = attempt_connection()
-# Recover on all other connection errors
-except pika.exceptions.AMQPConnectionError:
-    print("Connection was closed, retrying...")
-    channel = attempt_connection()
+def try_to_connect_to_channel():
+    channel = None
+    try:
+        channel = attempt_connection()
+    except pika.exceptions.AMQPChannelError as err:
+        print("Caught a channel error: {}, stopping...".format(err))
+        channel = attempt_connection()
+    except pika.exceptions.AMQPConnectionError:
+        print("Connection was closed, retrying...")
+        channel = attempt_connection()
+    return channel
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -55,10 +56,18 @@ class OrderViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             body = {"message": "order_created", **serializer.data}
-            channel.basic_publish(
-                exchange="", routing_key="order_queue", body=json.dumps(body)
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            channel = try_to_connect_to_channel()
+            if channel:
+                channel.basic_publish(
+                    exchange="", routing_key="order_queue", body=json.dumps(body)
+                )
+                channel.close()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(
+                    data="Failed to connect to RabbitMQ",
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False)
@@ -79,10 +88,18 @@ class OrderViewSet(viewsets.ModelViewSet):
             order.status = "CANCELED"
             order.save()
             body = {"message": "order_canceled", "order_id": str(order.id)}
-            channel.basic_publish(
-                exchange="", routing_key="order_queue", body=json.dumps(body)
-            )
-            return Response(status=200, data={"message": "Order canceled!"})
+            channel = try_to_connect_to_channel()
+            if channel:
+                channel.basic_publish(
+                    exchange="", routing_key="order_queue", body=json.dumps(body)
+                )
+                channel.close()
+                return Response(status=200, data={"message": "Order canceled!"})
+            else:
+                return Response(
+                    data="Failed to connect to RabbitMQ",
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
         else:
             return Response(
                 status=401,
