@@ -25,16 +25,17 @@ def attempt_connection():
     return channel
 
 
-channel = None
-try:
-    channel = attempt_connection()
-except pika.exceptions.AMQPChannelError as err:
-    print("Caught a channel error: {}, stopping...".format(err))
-    channel = attempt_connection()
-# Recover on all other connection errors
-except pika.exceptions.AMQPConnectionError:
-    print("Connection was closed, retrying...")
-    channel = attempt_connection()
+def try_to_connect_to_channel():
+    channel = None
+    try:
+        channel = attempt_connection()
+    except pika.exceptions.AMQPChannelError as err:
+        print("Caught a channel error: {}, stopping...".format(err))
+        channel = attempt_connection()
+    except pika.exceptions.AMQPConnectionError:
+        print("Connection was closed, retrying...")
+        channel = attempt_connection()
+    return channel
 
 
 class CourierAPI(viewsets.ViewSet):
@@ -51,10 +52,15 @@ class CourierAPI(viewsets.ViewSet):
             "order_id": order_id,
             "courier_id": courier_id,
         }
-        channel.basic_publish(
-            exchange="", routing_key="order_queue", body=json.dumps(body)
-        )
-        return Response(status=200, data="Order accepted!")
+        channel = try_to_connect_to_channel()
+        if channel:
+            channel.basic_publish(
+                exchange="", routing_key="order_queue", body=json.dumps(body)
+            )
+            channel.close()
+            return Response(status=200, data="Order accepted!")
+        else:
+            return Response(status=500, data="RabbitMQ is trolling")
 
     @action(detail=False, methods=["GET"])
     def pick_up_order(self, request):
@@ -66,10 +72,15 @@ class CourierAPI(viewsets.ViewSet):
             "order_id": order_id,
             "courier_id": courier_id,
         }
-        channel.basic_publish(
-            exchange="", routing_key="order_queue", body=json.dumps(body)
-        )
-        return Response(status=200, data="Order picked up")
+        channel = try_to_connect_to_channel()
+        if channel:
+            channel.basic_publish(
+                exchange="", routing_key="order_queue", body=json.dumps(body)
+            )
+            channel.close()
+            return Response(status=200, data="Order picked up")
+        else:
+            return Response(status=500, data="RabbitMQ is trolling")
 
     @action(detail=False, methods=["GET"])
     def deliver_order(self, request):
@@ -81,7 +92,12 @@ class CourierAPI(viewsets.ViewSet):
             "order_id": order_id,
             "courier_id": courier_id,
         }
-        channel.basic_publish(
-            exchange="", routing_key="order_queue", body=json.dumps(body)
-        )
-        return Response(status=200, data="Order delivered")
+        channel = try_to_connect_to_channel()
+        if channel:
+            channel.basic_publish(
+                exchange="", routing_key="order_queue", body=json.dumps(body)
+            )
+            channel.close()
+            return Response(status=200, data="Order delivered")
+        else:
+            return Response(status=500, data="RabbitMQ is trolling")
