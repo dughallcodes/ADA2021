@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Delivero 2</string>
+    <string name="Edit_username">User</string>
+    <string name="Button_login">Login</string>
+    <string name="password">Password</string>
+    <string name="TextView">TextView</string>
+    <string name="Login_Failed">Login Failed</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
