@@ -40,6 +40,7 @@ def callback(ch, method, properties, body):
         Order.objects.filter(id=message["order_id"]).update(
             status="COMPLETED", courier_id=message["courier_id"]
         )
+    print(message)
 
 
 channel.basic_consume(queue="order_queue", on_message_callback=callback, auto_ack=True)
