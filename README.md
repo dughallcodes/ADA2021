@@ -66,3 +66,6 @@ Technologies breakdown:
   - Send code* to browser
 
   *JUST CODE
+  
+  In order to run backend in Backend folder run: sh run_backend.sh
+  In order to run web_app interface run in Frontend/web_app: npm install && npm start
